@@ -33,6 +33,8 @@ require_once(__DIR__ . '/../../config.php');
 // @codingStandardsIgnoreEnd
 require('setup.php');
 
+$PAGE->set_context(context_system::instance());
+
 $wantsurl = optional_param('wantsurl', '', PARAM_LOCALURL); // Overrides $SESSION->wantsurl if given.
 if ($wantsurl !== '') {
     // This is later used in core_login_get_return_url().

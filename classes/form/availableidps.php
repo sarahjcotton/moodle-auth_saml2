@@ -46,7 +46,8 @@ class availableidps extends moodleform {
      * Definition
      */
     public function definition() {
-        global $OUTPUT;
+        global $CFG, $OUTPUT;
+
         $mform = $this->_form;
 
         $metadataentities = $this->_customdata['metadataentities'];
@@ -74,6 +75,10 @@ class availableidps extends moodleform {
                 $mform->addElement('text', $fieldkey.'[alias]', get_string('multiidp:label:alias', 'auth_saml2'));
                 $mform->setType($fieldkey.'[alias]', PARAM_TEXT);
 
+                // Edit mappings.
+                $mform->addElement('static', $fieldkey.'[mapping]',
+                    get_string('mappings', 'auth_saml2'), get_string('edit', 'auth_saml2', $idpentity['id']));
+
                 // Add the activeidp checkbox.
                 $mform->addElement('advcheckbox', $fieldkey.'[activeidp]',
                     get_string('status', 'auth_saml2'), get_string('multiidp:label:active', 'auth_saml2'), [], [false, true]);
@@ -91,6 +96,11 @@ class availableidps extends moodleform {
                 $mform->addElement('textarea', $fieldkey.'[whitelist]', get_string('multiidp:label:whitelist', 'auth_saml2'));
                 $mform->addHelpButton($fieldkey.'[whitelist]', 'multiidp:label:whitelist', 'auth_saml2');
                 $mform->setType($fieldkey.'[whitelist]', PARAM_TEXT);
+
+                // Link / download option for IdP metadata.
+                $mform->addElement('static', $fieldkey.'[metadatalink]', get_string('metadatalink', 'auth_saml2'),
+                    get_string('spmetadata_help', 'auth_saml2',
+                        $CFG->wwwroot . '/auth/saml2/sp/metadata.php?regenerate=1&idp=' . $idpentityid));
 
                 // Moodle Workplace - Tenant availability edit button.
                 if (class_exists('\tool_tenant\local\auth\saml2\manager')) {

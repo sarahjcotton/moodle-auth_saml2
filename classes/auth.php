@@ -95,7 +95,7 @@ class auth extends \auth_plugin_base {
      * Constructor.
      */
     public function __construct() {
-        global $CFG, $DB;
+        global $CFG, $DB, $SESSION;
 
         // Add username field to the list of data mapping to be able to update it on user creation if required.
         if (!in_array('username', $this->userfields)) {
@@ -134,6 +134,46 @@ class auth extends \auth_plugin_base {
         // Check if we have mutiple IdPs configured.
         // If we have mutliple metadata entries set multiidp to true.
         $this->multiidp = (count($this->metadataentities) > 1);
+
+        // Get the list of IdPs and their mapping settings.
+        $this->idplist = $this->get_idp_list();
+        if (isset($_GET['idp'])) {
+            // If it's set we're probably getting the SP metadata, but everything will still work if it's not.
+            $SESSION->saml2idp = $_GET['idp'];
+        }
+
+        // Load the selected IdP configuration.
+        if (!empty($SESSION->saml2idp)) {
+            if (isset($this->idplist[$SESSION->saml2idp])
+                && !empty($this->idplist[$SESSION->saml2idp])) {
+                foreach ($this->idplist[$SESSION->saml2idp] as $key => $value) {
+                    $this->config->$key = $value;
+                }
+            }
+        }
+    }
+
+    /**
+     * Return array of all the IdPs and their mapping settings.
+     *
+     * @return array
+     **/
+    public function get_idp_list() {
+        $idps = auth_saml2_get_idps();
+        $arrayconfig = array();
+
+        // Re-index the object to use shortname as the key.
+        foreach ($idps as $idp) {
+            foreach ($idp as $key => $value) {
+                $config = auth_saml2_get_idp_settings($value->id);
+                if ($config) {
+                    $arrayconfig[$key] = $config;
+                } else {
+                    $arrayconfig[$key] = array();
+                }
+            }
+        }
+        return $arrayconfig;
     }
 
     /**
@@ -175,7 +215,14 @@ class auth extends \auth_plugin_base {
      * @return string
      */
     public function get_file_sp_metadata_file() {
-        return $this->get_file($this->spname . '.xml');
+        global $SESSION;
+
+        $filename = $this->spname;
+        if (isset($SESSION->saml2idp)) {
+            $filename .= '_' . $SESSION->saml2idp;
+        }
+
+        return $this->get_file($filename . '.xml');
     }
 
     /**
@@ -953,7 +1000,7 @@ class auth extends \auth_plugin_base {
     public function update_user_record_from_attribute_map(&$user, $attributes, $newuser= false) {
         global $CFG;
 
-        $mapconfig = get_config('auth_saml2');
+        $mapconfig = $this->config;
         $allkeys = array_keys(get_object_vars($mapconfig));
         $update = false;
 

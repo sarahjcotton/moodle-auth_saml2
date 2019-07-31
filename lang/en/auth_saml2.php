@@ -71,6 +71,8 @@ $string['duallogin_help'] = '
 <p>If off, then admins can still see the manual login page via /login/index.php?saml=off</p>
 <p>If on, then external pages can deep link into moodle using saml eg /course/view.php?id=45&saml=on</p>
 <p>If set to test IdP connection, the network will be checked for connectivity, and if functional, SAML login will be initiated.<p/>';
+$string['edit'] = '<a href="edit.php?id={$a}">Edit</a>';
+$string['editidp'] = 'Edit IdP';
 $string['emailtaken'] = 'Can\'t create a new account, because {$a} email address is already registered';
 $string['emailtakenupdate'] = 'Your email wasn\'t updated, because email address {$a} is already registered';
 $string['errorinvalidautologin'] = 'Invalid autologin request';
@@ -125,6 +127,8 @@ $string['allowcreate'] = 'Allow create';
 $string['allowcreate_help'] = 'Allow creation of IdP users on demand';
 $string['authncontext'] = 'AuthnContext';
 $string['authncontext_help'] = 'Allows augmentation of assertions. Leave blank unless required';
+$string['mappings'] = 'Mappings';
+$string['metadatalink'] = 'Metadata';
 $string['metadatafetchfailed'] = 'Metadata fetch failed: {$a}';
 $string['metadatafetchfailedstatus'] = 'Metadata fetch failed: Status code {$a}';
 $string['metadatafetchfailedunknown'] = 'Metadata fetch failed: Unknown cURL error';
