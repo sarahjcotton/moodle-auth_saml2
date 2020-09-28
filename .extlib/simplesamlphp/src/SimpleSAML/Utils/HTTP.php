@@ -951,7 +951,18 @@ class HTTP
      */
     public function redirectTrustedURL(string $url, array $parameters = []): void
     {
+        if (!is_string($url) || !is_array($parameters)) {
+            throw new \InvalidArgumentException('Invalid input parameters.');
+        }
+
         $url = $this->normalizeURL($url);
+
+         // This is a Moodle hack. Both moodle and SSPHP rely on automatic
+        // destructors to cleanup the $DB var and the SSPHP session but
+        // this order is not guaranteed, so we force session saving here.
+        $session = \SimpleSAML\Session::getSessionFromRequest();
+        $session->save();
+
         $this->redirect($url, $parameters);
     }
 
